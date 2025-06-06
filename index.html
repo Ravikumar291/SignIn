@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ravi's Cafe - Book Your Slot</title>
+    
+    <!-- Tailwind CSS for styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* Custom styles for typography and background */
+        body {
+            font-family: 'Inter', sans-serif;
+        }
+        .font-playfair {
+            font-family: 'Playfair Display', serif;
+        }
+        /* Style for the background image panel */
+        .bg-cafe {
+            background-image: url('https://images.unsplash.com/photo-1554118811-1e0d58224f24?q=80&w=2047&auto=format&fit=crop');
+            background-size: cover;
+            background-position: center;
+        }
+        /* Custom focus ring color */
+        .focus\:ring-amber-500:focus {
+            --tw-ring-color: #f59e0b;
+        }
+    </style>
+</head>
+<body class="bg-stone-100 flex items-center justify-center min-h-screen">
+
+    <div class="relative w-full max-w-4xl m-4 lg:m-6 bg-white shadow-2xl rounded-2xl overflow-hidden flex flex-col md:flex-row">
+
+        <!-- Left Panel: Cafe Description -->
+        <div class="w-full md:w-1/2 p-8 sm:p-12 text-white bg-cafe flex flex-col justify-center">
+            <div class="bg-black bg-opacity-40 p-8 rounded-xl backdrop-blur-sm">
+                <h1 class="font-playfair text-4xl lg:text-5xl font-bold mb-4">Ravi's Cafe</h1>
+                <p class="text-lg leading-relaxed">
+                    Welcome to our little haven. A small, cozy cafe where you and your loved ones can spend quality time, creating memories over our delicious, handmade snacks and freshly brewed coffee. Step in to unwind and connect.
+                </p>
+            </div>
+        </div>
+
+        <!-- Right Panel: Login Form -->
+        <div class="w-full md:w-1/2 p-8 sm:p-12 flex flex-col justify-center">
+            <h2 class="text-3xl font-bold text-gray-800 mb-6 text-center">Book Your Table</h2>
+            
+            <!-- Custom Alert/Message Box -->
+            <div id="message-box" class="hidden p-3 mb-4 text-sm rounded-lg text-center font-medium">
+                <!-- Message content will be inserted by JS -->
+            </div>
+
+            <form id="login-form" novalidate>
+                <div class="mb-5">
+                    <label for="name" class="block mb-2 text-sm font-medium text-gray-700">Full Name</label>
+                    <input type="text" id="name" name="name" class="w-full px-4 py-3 bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-amber-500 focus:border-amber-500 transition duration-300" placeholder="e.g., John Doe" required>
+                </div>
+                <div class="mb-6">
+                    <label for="phone" class="block mb-2 text-sm font-medium text-gray-700">Phone Number</label>
+                    <input type="tel" id="phone" name="phone" class="w-full px-4 py-3 bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-amber-500 focus:border-amber-500 transition duration-300" placeholder="10-digit mobile number" required>
+                </div>
+                <button type="submit" class="w-full text-white bg-amber-600 hover:bg-amber-700 focus:ring-4 focus:outline-none focus:ring-amber-300 font-semibold rounded-lg text-md px-5 py-3 text-center transition-transform transform hover:scale-105 duration-300">
+                    Book Now
+                </button>
+            </form>
+
+            <!-- Coffee Button -->
+            <div class="text-center mt-8">
+                <button id="coffee-button" type="button" class="p-4 bg-amber-100 text-amber-800 rounded-full hover:bg-amber-200 focus:outline-none focus:ring-4 focus:ring-amber-300 transition-all duration-300 transform hover:scale-110" title="Have a good Day">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-8 h-8">
+                        <path d="M10 2v2"></path><path d="M14 2v2"></path>
+                        <path d="M16 8a6 6 0 0 1 6 6v2a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4v-2a6 6 0 0 1 6-6h4"></path>
+                        <path d="M18 8h1a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2h-1"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Get references to the DOM elements
+        const form = document.getElementById('login-form');
+        const nameInput = document.getElementById('name');
+        const phoneInput = document.getElementById('phone');
+        const messageBox = document.getElementById('message-box');
+        const coffeeButton = document.getElementById('coffee-button'); // Get the coffee button
+
+        // Add a submit event listener to the form
+        form.addEventListener('submit', function(event) {
+            // Prevent the default form submission behavior
+            event.preventDefault();
+
+            // Clear previous messages and styles
+            messageBox.className = 'hidden p-3 mb-4 text-sm rounded-lg text-center font-medium';
+            nameInput.classList.remove('border-red-500');
+            phoneInput.classList.remove('border-red-500');
+
+            // Get trimmed values from the input fields
+            const nameValue = nameInput.value.trim();
+            const phoneValue = phoneInput.value.trim();
+
+            // --- Validation Logic ---
+            // 1. Validate Name
+            const nameRegex = /^[a-zA-Z\s]+$/;
+            if (nameValue === '') {
+                displayMessage('Name cannot be empty.', 'error');
+                nameInput.classList.add('border-red-500');
+                return;
+            }
+            if (!nameRegex.test(nameValue)) {
+                displayMessage('Please enter a valid name (letters and spaces only).', 'error');
+                nameInput.classList.add('border-red-500');
+                return;
+            }
+
+            // 2. Validate Phone Number
+            const phoneRegex = /^\d{10}$/;
+            if (phoneValue === '') {
+                displayMessage('Phone number cannot be empty.', 'error');
+                phoneInput.classList.add('border-red-500');
+                return;
+            }
+            if (!phoneRegex.test(phoneValue)) {
+                displayMessage('Please enter a valid 10-digit phone number.', 'error');
+                phoneInput.classList.add('border-red-500');
+                return;
+            }
+            
+            // --- Success Case ---
+            displayMessage(`Welcome, ${nameValue}! Your booking is confirmed.`, 'success');
+            // form.reset();
+        });
+
+        // Add a click event listener to the coffee button
+        coffeeButton.addEventListener('click', function() {
+            displayMessage('Have a good Day!', 'info');
+        });
+
+        /**
+         * Displays a message in the message box.
+         * @param {string} message - The message to display.
+         * @param {string} type - The type of message ('error', 'success', or 'info').
+         */
+        function displayMessage(message, type) {
+            // Reset all possible style classes before adding new ones
+            messageBox.className = 'p-3 mb-4 text-sm rounded-lg text-center font-medium';
+            messageBox.textContent = message;
+
+            if (type === 'error') {
+                messageBox.classList.add('bg-red-100', 'text-red-700');
+            } else if (type === 'success') {
+                messageBox.classList.add('bg-green-100', 'text-green-700');
+            } else if (type === 'info') {
+                messageBox.classList.add('bg-blue-100', 'text-blue-700');
+            }
+            messageBox.classList.remove('hidden');
+        }
+    </script>
+
+</body>
+</html>
